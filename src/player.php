@@ -31,7 +31,7 @@ tbl_line(['', 'プレイリスト']);
 foreach ($playlist as $audio) {
     tbl_line([
         '<input type="radio" name="playing" value="'.$audio.'"><br>',
-        $audio,
+        pathinfo($audio, PATHINFO_BASENAME), // 本当はtitleを表示したほうが良い
     ]);
 }
 ?>
