@@ -12,6 +12,9 @@ open_html("Player");
 </style>
 
 <?php
+if (!isset($_GET['playlist'])) {
+    html_exit("プレイリストが選択されていません");
+}
 $playlist = array();
 $playlist_filename = $_GET['playlist'];
 $playlist_name = pathinfo($playlist_filename, PATHINFO_FILENAME);
