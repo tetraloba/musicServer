@@ -1,5 +1,9 @@
 <?php
 require "html_subr.php";
+require "./lib/getid3/getid3.php";
+$dir_playlists = './playlists';
+$dir_music = './music';
+
 open_html("Player");
 ?>
 <style>
@@ -18,7 +22,7 @@ if (!isset($_GET['playlist'])) {
 $playlist = array();
 $playlist_filename = $_GET['playlist'];
 $playlist_name = pathinfo($playlist_filename, PATHINFO_FILENAME);
-$playlist_file = fopen("./playlists/{$playlist_filename}", "r"); // プレイリストディレクトリのハードコーディングは気になるところ
+$playlist_file = fopen("{$dir_playlists}/{$playlist_filename}", "r"); // path.join()無いのか…
 if (!$playlist_file) {
     html_exit("プレイリスト {$playlist_filename} を開けませんでした。");
 }
@@ -30,11 +34,21 @@ while ($audio = trim(fgets($playlist_file))) {
 <form id="playlist_audio_file_list">
 <table border="1">
 <?php
-tbl_line(['', 'プレイリスト']);
+/* 楽曲リストを出力 */
+tbl_line(['', 'title', 'artist', 'album', 'track_number']);
 foreach ($playlist as $audio) {
+    /* 楽曲のメタデータを取得 */
+    $getID3 = new getID3();
+    $info = $getID3->analyze($dir_music.'/'.$audio);
+    getid3_lib::CopyTagsToComments($info);
+    /* 楽曲情報を出力 */
     tbl_line([
         '<input type="radio" name="playing" value="'.$audio.'"><br>',
-        pathinfo($audio, PATHINFO_BASENAME), // 本当はtitleを表示したほうが良い
+        // pathinfo($audio, PATHINFO_BASENAME), // ファイル名
+        $info['comments']['title'][0],
+        $info['comments']['artist'][0],
+        $info['comments']['album'][0],
+        $info['comments']['track_number'][0],
     ]);
 }
 ?>
