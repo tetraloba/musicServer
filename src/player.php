@@ -36,14 +36,14 @@ while ($audio = trim(fgets($playlist_file))) {
 <?php
 /* 楽曲リストを出力 */
 tbl_line(['', 'title', 'artist', 'album', 'track_number']);
-foreach ($playlist as $audio) {
+foreach ($playlist as $i => $audio) {
     /* 楽曲のメタデータを取得 */
     $getID3 = new getID3();
     $info = $getID3->analyze($dir_music.'/'.$audio);
     getid3_lib::CopyTagsToComments($info);
     /* 楽曲情報を出力 */
     tbl_line([
-        '<input type="radio" name="playing" value="'.$audio.'"><br>',
+        '<input class="audio_selector" type="radio" name="playing" value="'.$i.'"><br>',
         // pathinfo($audio, PATHINFO_BASENAME), // ファイル名
         $info['comments']['title'][0],
         $info['comments']['artist'][0],
@@ -97,6 +97,26 @@ audio.addEventListener('ended', () => {
         index = 0;
     }
 });
+
+/* オーディオテーブル(楽曲一覧) */
+audio_table = document.getElementById('playlist_audio_file_list');
+audio_selectors = audio_table.getElementsByClassName('audio_selector');
+/* 再生されている曲のラジオボタンをチェックする */
+if (audio.readyState) {
+    audio_selectors[index].checked = true;
+} else {
+    audio.addEventListener('loadedmetadata', () => {
+        audio_selectors[index].checked = true;
+    });
+}
+/* ラジオボタンが押された時その曲を再生する */
+for (audio_selector of audio_selectors) {
+    audio_selector.addEventListener('change', (e) => {
+        index = e.target.value;
+        audio.src = playlist[index];
+        audio.play();
+    })
+}
 
 /* プレイヤの操作 */
 /* play pause */
