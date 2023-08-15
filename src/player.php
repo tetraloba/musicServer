@@ -6,14 +6,6 @@ $dir_music = './music';
 
 open_html("Player");
 ?>
-<style>
-    body {
-        /* background-color: #000000; */
-    }
-    #player {
-        width: 100%;
-    }
-</style>
 
 <?php
 if (!isset($_GET['playlist'])) {
@@ -32,7 +24,7 @@ while ($audio = trim(fgets($playlist_file))) {
 ?>
 <br id="playlist_name"><?=$playlist_name?></br>
 <form id="playlist_audio_file_list">
-<table border="1">
+<table id="audio_table" border="1">
 <?php
 /* 楽曲リストを出力 */
 tbl_line(['', 'title', 'artist', 'album', 'track_number']);
@@ -57,16 +49,27 @@ foreach ($playlist as $i => $audio) {
 
 <!-- メディアプレイヤ実体 -->
 <div id="audio_container">
-    <audio id="player" controls src="path_to_audio_file" type="audio/flac" >title</audio><br>
-    <button id="prev">prev</button>
-    <button id="stop">stop</button>
-    <button id="play_pause">play</button>
-    <button id="next">next</button><br>
-    <span id="current_time" class="time">00:00</span>
-    <input type="range" id="seekbar" max="100" value="0" />
-    <span id="duration" class="time">00:00</span>
-    <input type="range" id="volumebar" max="100" value="100" /> <!-- 毎回デフォルト100で良いのかな？ -->
-    <span id="volume">100%</span>
+    <audio id="player" src="path_to_audio_file" type="audio/flac" >title</audio><br>
+    <div id="seekbar_container">
+        <span id="current_time" class="time">00:00</span>
+        <input type="range" id="seekbar" max="100" value="0" />
+        <span id="duration" class="time">00:00</span>
+    </div>
+    <div id="audio_info">
+        <span>title</span>
+        <span>  /  </span>
+        <span>artist</span>
+    </div>
+    <div id="player_buttons">
+        <button id="prev">prev</button>
+        <button id="stop">stop</button>
+        <button id="play_pause">play</button>
+        <button id="next">next</button><br>
+    </div>
+    <div id="volume_container">
+        <input type="range" id="volumebar" max="100" value="100" /> <!-- 毎回デフォルト100で良いのかな？ -->
+        <span id="volume">100%</span>
+    </div>
 </div>
 
 <script>
@@ -99,8 +102,8 @@ audio.addEventListener('ended', () => {
 });
 
 /* オーディオテーブル(楽曲一覧) */
-audio_table = document.getElementById('playlist_audio_file_list');
-audio_selectors = audio_table.getElementsByClassName('audio_selector');
+audio_file_list = document.getElementById('playlist_audio_file_list');
+audio_selectors = audio_file_list.getElementsByClassName('audio_selector');
 /* 再生されている曲のラジオボタンをチェックする */
 if (audio.readyState) {
     audio_selectors[index].checked = true;
@@ -116,6 +119,19 @@ for (audio_selector of audio_selectors) {
         audio.src = playlist[index];
         audio.play();
     })
+}
+
+/* プレイヤの楽曲情報表示 */
+const audio_table = document.getElementById('audio_table');
+const audio_info = document.getElementById('audio_info');
+if (audio.readyState) { // この辺り繰り返しが多いのでイベント側に揃えるのもありかも？
+    audio_info.children[0].textContent = audio_table.rows[index + 1].cells[1].innerHTML;
+    audio_info.children[2].textContent = audio_table.rows[index + 1].cells[2].innerHTML;
+} else {
+    audio.addEventListener('loadedmetadata', () => {
+        audio_info.children[0].textContent = audio_table.rows[index + 1].cells[1].innerHTML;
+        audio_info.children[2].textContent = audio_table.rows[index + 1].cells[2].innerHTML;
+    });
 }
 
 /* プレイヤの操作 */

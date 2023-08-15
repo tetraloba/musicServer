@@ -1,3 +1,4 @@
+/* シークバー、ボリュームバー */
 #audio_container {
     --seek-before-width: 0%;
     --volume-before-width: 100%;
@@ -21,8 +22,55 @@ input[type="range"]::-webkit-slider-thumb {
     margin: -7px 0 0 0;
 }
 #seekbar {
-    width: 50%;
+    width: 100%;
 }
 #volumebar::-webkit-slider-runnable-track {
-    background-color: rgba(0, 125, 181, 0.6);
+    background: rgba(0, 125, 181, 0.6);
+}
+
+
+
+/* flex audio_container */
+#audio_container {
+    display:flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+#seekbar_container {
+    flex-basis: 100%;
+    text-align: center;
+}
+#audio_info {
+    flex-basis: 30%;
+}
+#player_buttons {
+    flex-basis: 40%;
+    text-align: center;
+}
+#volume_container {
+    flex-basis: 30%;
+    text-align: right;
+}
+/* flex seekbar_container */
+#seekbar_container {
+    display: flex;
+}
+
+#audio_info {
+    overflow: hidden;
+}
+
+/* カラーテーマ */
+:root {
+    color-scheme: dark;
+}
+body {
+    background-color: black;
+    color: #cccccc;
+}
+button {
+    background-color: #444444;
+}
+input[type="button"] {
+    background-color: #444444;
 }
