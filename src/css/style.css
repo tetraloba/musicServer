@@ -1,0 +1,30 @@
+#audio_container {
+    --seek-before-width: 0%;
+    --volume-before-width: 100%;
+    --buffered-width: 0%;
+}
+input[type="range"] {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    height: 19px;
+    margin: 30px 2.5% 20px 2.5%;
+    float: left;
+    outline: none;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 3px;
+    cursor: pointer;
+    background: linear-gradient(to right, rgba(0, 125, 181, 0.6) var(--buffered-width), rgba(0, 125, 181, 0.2) var(--buffered-width));
+}
+input[type="range"]::-webkit-slider-thumb {
+    position: relative;
+    margin: -7px 0 0 0;
+}
+#seekbar {
+    width: 80%;
+}
+#volumebar::-webkit-slider-runnable-track {
+    background-color: rgba(0, 125, 181, 0.6);
+}

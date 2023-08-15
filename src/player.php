@@ -151,12 +151,45 @@ nextButton.addEventListener('click', () => {
 
 /* プレイヤのシークバー等 */
 /* seekbar */
+const displayBufferedAmount = () => {
+    let bufferedAmount = 0;
+    if (audio.buffered.length) { // bufferedの要素数が0だと配列外アクセスでエラー吐くので
+        /* 1. 常に「一番最後のバッファ」の終了位置 */
+        // bufferedAmount = Math.floor(audio.buffered.end(audio.buffered.length - 1));
+        /* 2. 常に「一番最初のバッファ」の終了位置 */
+        // bufferedAmount = Math.floor(audio.buffered.end(0));
+        /* 3. 再生位置以降で最も近い「バッファの終了位置」 */
+        for (let i = 0; i < audio.buffered.length; i++) {
+            bufferedAmount = Math.floor(audio.buffered.end(i));
+            if (audio.currentTime <= bufferedAmount) {
+                break;
+            }
+        }
+        /* 4. 「再生位置を含むバッファ」の終了位置 */
+        // for (let i = 0; i < audio.buffered.length; i++) {
+        //     if (audio.currentTime < audio.buffered.start(i)) {
+        //         break;
+        //     }
+        //     bufferedAmount = Math.floor(audio.buffered.end(i));
+        // }
+    }
+    audio_container.style.setProperty('--buffered-width', `${(bufferedAmount / seekbar.max) * 100}%`);
+}
+const showRangeProgress = (rangeInput) => {
+    if (rangeInput === seekbar) {
+        audio_container.style.setProperty('--seek-before-width', rangeInput.value / rangeInput.max * 100 + '%');
+    } else {
+        audio_container.style.setProperty('--volume-before-width', rangeInput.value / rangeInput.max * 100 + '%');
+    }
+}
 const seekbar = document.getElementById('seekbar');
 if (audio.readyState) { // この辺り繰り返しが多いのでイベント側に揃えるのもありかも？
     seekbar.max = audio.duration;
+    displayBufferedAmount();
 } else {
     audio.addEventListener('loadedmetadata', () => {
         seekbar.max = audio.duration;
+        displayBufferedAmount();
     });
 }
 seekbar.addEventListener('input', () => { // input を change にすると離したときに反映
@@ -164,6 +197,10 @@ seekbar.addEventListener('input', () => { // input を change にすると離し
 });
 audio.addEventListener('timeupdate', () => {
     seekbar.value = audio.currentTime;
+});
+audio.addEventListener('progress', displayBufferedAmount);
+seekbar.addEventListener('input', (e) => {
+    showRangeProgress(e.target);
 });
 /* current_time */
 const hhmmssTime = (secs) => {
@@ -195,6 +232,9 @@ if (audio.readyState) {
 const volumebar = document.getElementById('volumebar');
 volumebar.addEventListener('input', () => {
     audio.volume = volumebar.value / 100; // 0 ~ 1
+});
+volumebar.addEventListener('input', (e) => {
+    // showRangeProgress(e.target);
 });
 /* volume */
 const volume = document.getElementById('volume');
