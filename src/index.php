@@ -1,10 +1,10 @@
 <?php
 require("html_subr.php");
+$dir_playlists = './playlists';
 
-// $playlist = "To Kill a living Book -for Library Of Ruina-.m3u";
 open_html("muiscServer");
 
-$playlists = glob('./playlists/*');
+$playlists = glob("{$dir_playlists}/*");
 ?>
 
 プレイリストを選択して開くボタンを押してください。<br><br>
