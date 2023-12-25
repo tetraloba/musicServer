@@ -1,0 +1,25 @@
+CREATE DATABASE music_server;
+
+USE music_server;
+
+CREATE TABLE albums (
+    name VARCHAR(128),
+    artist VARCHAR(64),
+    track INTEGER,
+    year DATE,
+    length TIME,
+    type VARCHAR(8), /* EP, Single, Albumなど */
+    PRIMARY KEY(name, artist)
+);
+
+CREATE TABLE audio_meta (
+    title VARCHAR(128),
+    artist VARCHAR(64),
+    tracknum INTEGER,
+    album VARCHAR(128),
+    length TIME,
+    format VARCHAR(4),
+    path VARCHAR(256),
+    PRIMARY KEY(path),
+    FOREIGN KEY (album) REFERENCES albums(name) ON DELETE CASCADE ON UPDATE CASCADE
+);
