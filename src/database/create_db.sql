@@ -1,4 +1,4 @@
-CREATE DATABASE music_server;
+CREATE DATABASE music_server CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 USE music_server;
 
@@ -22,4 +22,12 @@ CREATE TABLE audio_meta (
     path VARCHAR(256),
     PRIMARY KEY(path),
     FOREIGN KEY (album) REFERENCES albums(name) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE playlists (
+    name VARCHAR(128),
+    track INTEGER,
+    audio_path VARCHAR(256),
+    PRIMARY KEY(name, track),
+    FOREIGN KEY (audio_path) REFERENCES audio_meta(path)
 );
